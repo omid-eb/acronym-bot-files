@@ -14,9 +14,18 @@ HOST_PATH = "/root/acronym_bot"
 def fix_path(p):
     return p.replace(DOCKER_PATH, HOST_PATH)
 
-def add_logo_to_cover(cover_path, output_path):
+def add_logo_to_cover(cover_path, output_path, rotation='none'):
     cover = Image.open(cover_path).convert("RGB")
     cover = ImageOps.exif_transpose(cover)
+
+    # Apply user-specified rotation
+    if rotation == 'cw':
+        cover = cover.rotate(-90, expand=True)
+    elif rotation == 'ccw':
+        cover = cover.rotate(90, expand=True)
+    elif rotation == '180':
+        cover = cover.rotate(180, expand=True)
+
     cw, ch = cover.size
     banner_h = max(int(ch * 0.13), 80)
     logo = Image.open(LOGO_PATH).convert("RGBA")
@@ -47,9 +56,10 @@ def process_images():
         output_dir = fix_path(data['output_dir'])
         cover_path = fix_path(data['cover_path'])
         other_paths = [fix_path(p) for p in data.get('other_paths', [])]
+        cover_rotation = data.get('cover_rotation', 'none')
         os.makedirs(output_dir, exist_ok=True)
         cover_out = os.path.join(output_dir, 'cover.jpg')
-        add_logo_to_cover(cover_path, cover_out)
+        add_logo_to_cover(cover_path, cover_out, cover_rotation)
         other_outs = []
         for i, path in enumerate(other_paths):
             out_path = os.path.join(output_dir, 'photo_' + str(i + 1) + '.jpg')
