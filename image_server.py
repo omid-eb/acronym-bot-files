@@ -17,9 +17,6 @@ def fix_path(p):
 def add_logo_to_cover(cover_path, output_path):
     cover = Image.open(cover_path).convert("RGB")
     cover = ImageOps.exif_transpose(cover)
-    w, h = cover.size
-    if w > h:
-        cover = cover.rotate(90, expand=True)
     cw, ch = cover.size
     banner_h = max(int(ch * 0.13), 80)
     logo = Image.open(LOGO_PATH).convert("RGBA")
@@ -40,9 +37,6 @@ def add_logo_to_cover(cover_path, output_path):
 def process_other_image(img_path, output_path):
     img = Image.open(img_path).convert("RGB")
     img = ImageOps.exif_transpose(img)
-    w, h = img.size
-    if w > h:
-        img = img.rotate(90, expand=True)
     img.save(output_path, format="JPEG", quality=95)
     return output_path
 
