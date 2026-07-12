@@ -16,12 +16,12 @@ def fix_path(p):
 
 def add_logo_to_cover(cover_path, output_path, rotation='none'):
     cover = Image.open(cover_path).convert("RGB")
-    cover = ImageOps.exif_transpose(cover)
 
+    # Apply only user-specified rotation — no auto EXIF rotation
     if rotation == 'cw':
-        cover = cover.rotate(90, expand=True)
-    elif rotation == 'ccw':
         cover = cover.rotate(-90, expand=True)
+    elif rotation == 'ccw':
+        cover = cover.rotate(90, expand=True)
     elif rotation == '180':
         cover = cover.rotate(180, expand=True)
 
@@ -44,7 +44,6 @@ def add_logo_to_cover(cover_path, output_path, rotation='none'):
 
 def process_other_image(img_path, output_path):
     img = Image.open(img_path).convert("RGB")
-    img = ImageOps.exif_transpose(img)
     img.save(output_path, format="JPEG", quality=95)
     return output_path
 
