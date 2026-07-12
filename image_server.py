@@ -18,11 +18,10 @@ def add_logo_to_cover(cover_path, output_path, rotation='none'):
     cover = Image.open(cover_path).convert("RGB")
     cover = ImageOps.exif_transpose(cover)
 
-    # Apply user-specified rotation
     if rotation == 'cw':
-        cover = cover.rotate(-90, expand=True)
-    elif rotation == 'ccw':
         cover = cover.rotate(90, expand=True)
+    elif rotation == 'ccw':
+        cover = cover.rotate(-90, expand=True)
     elif rotation == '180':
         cover = cover.rotate(180, expand=True)
 
