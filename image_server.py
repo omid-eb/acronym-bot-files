@@ -22,8 +22,7 @@ def fix_path(p):
     return p.replace(DOCKER_PATH, HOST_PATH)
 
 def open_image(path):
-    img = Image.open(path).convert("RGB")
-    return img
+    return Image.open(path).convert("RGB")
 
 def add_logo_to_cover(cover_path, output_path, rotation='none'):
     cover = open_image(cover_path)
@@ -75,7 +74,7 @@ def process_images():
             out_path = os.path.join(output_dir, 'photo_' + str(i + 1) + '.jpg')
             process_other_image(path, out_path)
             other_outs.append(out_path)
-        return jsonify({'success': True, 'cover': cover_out, 'others': other_outs})
+        return jsonify({'success': True, 'cover': cover_out, 'others': other_outs, 'applied_rotation': cover_rotation})
     except Exception as e:
         return jsonify({'success': False, 'error': str(e)}), 500
 
