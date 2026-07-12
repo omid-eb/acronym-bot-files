@@ -1,5 +1,5 @@
 from flask import Flask, request, jsonify
-from PIL import Image, ImageOps
+from PIL import Image
 import os
 import requests
 import threading
@@ -22,11 +22,11 @@ def fix_path(p):
     return p.replace(DOCKER_PATH, HOST_PATH)
 
 def open_image(path):
+    # No exif_transpose - use raw pixels as base, rotation is fully manual
     return Image.open(path).convert("RGB")
 
 def add_logo_to_cover(cover_path, output_path, rotation='none'):
     cover = open_image(cover_path)
-    cover = ImageOps.exif_transpose(cover)
 
     if rotation == 'cw':
         cover = cover.rotate(-90, expand=True)
@@ -54,7 +54,6 @@ def add_logo_to_cover(cover_path, output_path, rotation='none'):
 
 def process_other_image(img_path, output_path):
     img = open_image(img_path)
-    img = ImageOps.exif_transpose(img)
     img.save(output_path, format="JPEG", quality=95)
     return output_path
 
