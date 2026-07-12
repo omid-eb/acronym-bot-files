@@ -5,6 +5,13 @@ import requests
 import threading
 import signal
 
+try:
+    from pillow_heif import register_heif_opener
+    register_heif_opener()
+    print("HEIC support enabled")
+except ImportError:
+    print("pillow-heif not installed, HEIC files may not work")
+
 app = Flask(__name__)
 
 LOGO_PATH = "/root/acronym_bot/Logo.png"
@@ -14,10 +21,14 @@ HOST_PATH = "/root/acronym_bot"
 def fix_path(p):
     return p.replace(DOCKER_PATH, HOST_PATH)
 
-def add_logo_to_cover(cover_path, output_path, rotation='none'):
-    cover = Image.open(cover_path).convert("RGB")
+def open_image(path):
+    img = Image.open(path).convert("RGB")
+    return img
 
-    # Apply only user-specified rotation — no auto EXIF rotation
+def add_logo_to_cover(cover_path, output_path, rotation='none'):
+    cover = open_image(cover_path)
+    cover = ImageOps.exif_transpose(cover)
+
     if rotation == 'cw':
         cover = cover.rotate(-90, expand=True)
     elif rotation == 'ccw':
@@ -43,7 +54,8 @@ def add_logo_to_cover(cover_path, output_path, rotation='none'):
     return output_path
 
 def process_other_image(img_path, output_path):
-    img = Image.open(img_path).convert("RGB")
+    img = open_image(img_path)
+    img = ImageOps.exif_transpose(img)
     img.save(output_path, format="JPEG", quality=95)
     return output_path
 
